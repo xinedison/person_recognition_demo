@@ -36,10 +36,11 @@ def onnx_export():
     print(output.shape)
 
 if __name__ == '__main__':
-    image_path = './datas/00000023.jpg'
-    frame = cv2.imread(image_path)
-    detector = Yolo7(ckpt='./detectors/yolo7/checkpoints/yolov7-e6e.pt')
-    players = detector.player_det(frame, row=1, col=1)
-    print(players)
+    #image_path = './datas/00000023.jpg'
+    #frame = cv2.imread(image_path)
+    #detector = Yolo7(ckpt='./detectors/yolo7/checkpoints/yolov7-e6e.pt')
+    #players = detector.player_det(frame, row=1, col=1)
+    #print(players)
+    onnx_export()
 
 
