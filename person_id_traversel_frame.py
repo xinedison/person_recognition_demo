@@ -104,9 +104,9 @@ def write_label_json(json_path, out_frame_2_person):
 
 if __name__ == '__main__':
     #person_track_file = '/home/avs/Codes/PaddleDetection/output/LNBGvsZJCZ_615.txt'
-    person_track_file = '/home/avs/Codes/face_recognition/datas/basketball_dataset_01/CBA-cut11.track'
+    person_track_file = '/home/avs/Codes/face_recognition/datas/basketball_dataset_01/NBA-cut-1.track'
     #face_file = '/home/avs/Codes/face_recognition/datas/recog/faceid_LNBGvsZJCZ_615.ts.txt'
-    player_num_file = '/home/avs/Codes/face_recognition/datas/basketball_dataset_01/playerNum__CBA-cut11.mp4.txt'
+    player_num_file = '/home/avs/Codes/face_recognition/datas/basketball_dataset_01/playerNum_NBA-cut-1.mp4.txt'
 
     frame_2_person_list = read_track_file(person_track_file)
 
@@ -153,7 +153,7 @@ if __name__ == '__main__':
         
     #print(person_2_face)
 
-    video_file = '/home/avs/Codes/face_recognition/datas/basketball_dataset_01/CBA-cut11.mp4'
+    video_file = '/home/avs/Codes/face_recognition/datas/basketball_dataset_01/NBA-cut-1.mp4'
     output_dir = './datas/basketball_dataset_01/'
     cnt_thresh = 2
 
@@ -164,8 +164,8 @@ if __name__ == '__main__':
     height = int(capture.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fps = int(capture.get(cv2.CAP_PROP_FPS))
 
-    out_path = os.path.join(output_dir, "{}_{}".format("ocr_byte", video_out_name))
-    out_label = os.path.join(output_dir, "{}_{}".format(video_out_name, "label.json"))
+    out_path = os.path.join(output_dir, "{}_{}".format("ocr_byte_clip", video_out_name))
+    out_label = os.path.join(output_dir, "{}_{}".format(video_out_name, "clip_label.json"))
     out_frame_2_person = {}
 
     video_format = 'mp4v'
