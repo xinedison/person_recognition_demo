@@ -93,7 +93,8 @@ def write_label_json(json_path, out_frame_2_person):
             if len(person_list) > 0:
                 person_objs = []
                 for box, player_num_str in person_list:
-                    team = player_num_str.split('_')[1]
+                    #team = player_num_str.split('_')[1]
+                    team = player_num_str
                     person_data = {"number":player_num_str, "team":team, "coord":box}
                     person_objs.append(person_data)
                 json_obj['data'] = person_objs
@@ -104,32 +105,13 @@ def write_label_json(json_path, out_frame_2_person):
 
 if __name__ == '__main__':
     #person_track_file = '/home/avs/Codes/PaddleDetection/output/LNBGvsZJCZ_615.txt'
-    person_track_file = '/home/avs/Codes/face_recognition/datas/basketball_dataset_01/NBA-cut-1.track'
+    person_track_file = '/home/avs/Codes/face_recognition/datas/basketball_dataset_01/CBA-cut11.track'
     #face_file = '/home/avs/Codes/face_recognition/datas/recog/faceid_LNBGvsZJCZ_615.ts.txt'
-    player_num_file = '/home/avs/Codes/face_recognition/datas/basketball_dataset_01/playerNum_NBA-cut-1.mp4.txt'
+    player_num_file = '/home/avs/Codes/face_recognition/datas/basketball_dataset_01/yolo7_playerNum_CBA-cut11.mp4.txt'
 
     frame_2_person_list = read_track_file(person_track_file)
 
     frame_2_player_num = read_player_num_file(player_num_file)
-    '''
-    #frame_2_face = read_face_file(face_file)
-    #person_2_face = {}
-    #for frame_idx, person_list in frame_2_person_list.items():
-    #    if frame_idx in frame_2_face:
-    #        face_list = frame_2_face[frame_idx]
-    #        for face in face_list:
-    #            face_id = face[0]
-    #            face_box = face[1:5]
-    #            for person in person_list:
-    #                person_id = person[0]
-    #                person_x1, person_y1, person_w, person_h = person[1:5]
-    #                person_box = [person_x1, person_y1, person_x1+person_w, person_y1+person_h]
-    #                if is_rectangle_cross(face_box, person_box) and (cross_area(face_box, person_box)>0.95):
-    #                    face_list = person_2_face.get(person_id, [])
-    #                    face_list.append(face_id)
-    #                    person_2_face[person_id] = face_list
-    #                #person_2_face[person_id] = person_id
-    '''
     person_2_player_num = {}
     for frame_idx, person_list in frame_2_person_list.items():
         if frame_idx in frame_2_player_num:
@@ -153,7 +135,7 @@ if __name__ == '__main__':
         
     #print(person_2_face)
 
-    video_file = '/home/avs/Codes/face_recognition/datas/basketball_dataset_01/NBA-cut-1.mp4'
+    video_file = '/home/avs/Codes/face_recognition/datas/basketball_dataset_01/CBA-cut11.mp4'
     output_dir = './datas/basketball_dataset_01/'
     cnt_thresh = 2
 
@@ -164,8 +146,8 @@ if __name__ == '__main__':
     height = int(capture.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fps = int(capture.get(cv2.CAP_PROP_FPS))
 
-    out_path = os.path.join(output_dir, "{}_{}".format("ocr_byte_clip", video_out_name))
-    out_label = os.path.join(output_dir, "{}_{}".format(video_out_name, "clip_label.json"))
+    out_path = os.path.join(output_dir, "{}_{}".format("yolo_ocr", video_out_name))
+    out_label = os.path.join(output_dir, "{}_{}".format(video_out_name, "yolo_ocr_clip_label.json"))
     out_frame_2_person = {}
 
     video_format = 'mp4v'
@@ -194,28 +176,13 @@ if __name__ == '__main__':
                 person_id, x1, y1, w, h, score = person_box
 
                 intbox = tuple(map(int, (x1, y1, x1+w, y1+h)))
-                #if person_id in person_2_face: # find person face
-                #    face_id_list = person_2_face[person_id]
-                #    face_id_max_cnt = stat_person(face_id_list)
-                #    if face_id_max_cnt[1] >= cnt_thresh:
-                #        face_id = face_id_max_cnt[0]
-                #        color = get_color(abs(face_id))
-                #        id_text = 'ID: {}'.format(int(face_id))
- 
-                #        cv2.rectangle(
-                #            frame, intbox[0:2], intbox[2:4], color=color, thickness=line_thickness)
-                #        cv2.putText(
-                #            frame,
-                #            id_text, (intbox[0], intbox[1] - 25),
-                #            cv2.FONT_ITALIC,
-                #            text_scale, (0, 255, 255),
-                #            thickness=text_thickness)
                 if person_id in person_2_player_num:
                     player_id_list = person_2_player_num[person_id]
                     player_id_max_cnt = stat_person(player_id_list)
                     if player_id_max_cnt[1] >= cnt_thresh:
                         player_str = player_id_max_cnt[0]
-                        player_id = int(player_str.split('_')[0])
+                        #player_id = int(player_str.split('_')[0])
+                        player_id = int(player_str)
                         color = get_color(abs(player_id))
                         print("player_str:", player_str)
                         id_text = 'PID: {}'.format(player_str)
