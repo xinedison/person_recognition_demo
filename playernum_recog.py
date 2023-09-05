@@ -294,8 +294,9 @@ if __name__ == '__main__':
     reader = cv2.VideoCapture(in_video)
 
     output_video = os.path.join('./datas/basketball_dataset_01', '{}_{}.mp4'.format('ocr_playerNum', basename))
-    output_txt = os.path.join('./datas/basketball_dataset_01', '{}_{}.txt'.format('ocr_playerNum', basename))
     writer = cv2.VideoWriter(output_video, cv2.VideoWriter_fourcc(*"mp4v"),30, (1920, 1080))
+
+    output_txt = os.path.join('./datas/basketball_dataset_01', '{}_{}.txt'.format('ocr_playerNum', basename))
     fout = open(output_txt, 'w')
 
     more = True
