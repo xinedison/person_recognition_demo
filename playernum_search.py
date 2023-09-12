@@ -121,6 +121,7 @@ def detect_frame_ocr_rec(image, ocr_engine, person_boxes, feat_extractor, team_s
                         team_name = get_team_name(feat_extractor, player, team_searcher)
                         player_num_team = '{}_{}_N_0'.format(player_num_ocr, team_name)
                         playernum_boxes.append([num_x1, num_y1, num_x2, num_y2, player_num_team])
+                        break
        
     return out_image, playernum_boxes
 
@@ -205,7 +206,7 @@ if __name__ == '__main__':
             #out_image = detect_frame_number(frame, clip_feat, searcher)
             person_boxes = frame_2_person_list.get(str(frame_id), [])
 
-            out_image, playernum_boxes = detect_frame_ocr_rec(frame, ocr_engine, person_boxes, person_feat, team_searcher) 
+            out_image, playernum_boxes = detect_frame_ocr_rec(frame, ocr_engine, person_boxes, person_feat, team_searcher)
             for player_box in playernum_boxes:
                 player_out = ','.join(map(str, player_box))            
                 line = '{},{}\n'.format(frame_id, player_out)

@@ -93,8 +93,8 @@ def write_label_json(json_path, out_frame_2_person):
             if len(person_list) > 0:
                 person_objs = []
                 for box, player_num_str in person_list:
-                    #team = player_num_str.split('_')[1]
-                    team = player_num_str
+                    team = player_num_str.split('_')[1]
+                    #team = player_num_str
                     person_data = {"number":player_num_str, "team":team, "coord":box}
                     person_objs.append(person_data)
                 json_obj['data'] = person_objs
@@ -107,7 +107,7 @@ if __name__ == '__main__':
     #person_track_file = '/home/avs/Codes/PaddleDetection/output/LNBGvsZJCZ_615.txt'
     person_track_file = '/home/avs/Codes/face_recognition/datas/basketball_dataset_01/CBA-cut11.track'
     #face_file = '/home/avs/Codes/face_recognition/datas/recog/faceid_LNBGvsZJCZ_615.ts.txt'
-    player_num_file = '/home/avs/Codes/face_recognition/datas/basketball_dataset_01/yolo7_playerNum_CBA-cut11.mp4.txt'
+    player_num_file = '/home/avs/Codes/face_recognition/datas/basketball_dataset_01/yolo7_team_Num_CBA-cut11.mp4.txt'
 
     frame_2_person_list = read_track_file(person_track_file)
 
@@ -131,6 +131,8 @@ if __name__ == '__main__':
                             player_list = person_2_player_num.get(person_id, [])
                             player_list.append(player_id)
                             person_2_player_num[person_id] = player_list
+                            print('== frame_idx ', frame_idx, ' person ', person_id, ' with player ', player_id)
+                            break
                 
         
     #print(person_2_face)
@@ -146,8 +148,8 @@ if __name__ == '__main__':
     height = int(capture.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fps = int(capture.get(cv2.CAP_PROP_FPS))
 
-    out_path = os.path.join(output_dir, "{}_{}".format("yolo_ocr", video_out_name))
-    out_label = os.path.join(output_dir, "{}_{}".format(video_out_name, "yolo_ocr_clip_label.json"))
+    out_path = os.path.join(output_dir, "{}_{}".format("yolo_ocr_team", video_out_name))
+    out_label = os.path.join(output_dir, "{}_{}".format(video_out_name, "yolo_ocr_team_label.json"))
     out_frame_2_person = {}
 
     video_format = 'mp4v'
@@ -181,10 +183,10 @@ if __name__ == '__main__':
                     player_id_max_cnt = stat_person(player_id_list)
                     if player_id_max_cnt[1] >= cnt_thresh:
                         player_str = player_id_max_cnt[0]
-                        #player_id = int(player_str.split('_')[0])
-                        player_id = int(player_str)
-                        color = get_color(abs(player_id))
-                        print("player_str:", player_str)
+                        player_id = int(player_str.split('_')[0])
+                        team_id = int(player_str.split('_')[1])
+                        color = get_color(team_id*100+abs(player_id))
+                        #print("player_str:", player_str)
                         id_text = 'PID: {}'.format(player_str)
                         cv2.rectangle(
                             frame, intbox[0:2], intbox[2:4], color=color, thickness=line_thickness)
