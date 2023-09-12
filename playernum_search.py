@@ -86,7 +86,7 @@ def cross_area(rect1, rect2):
  
 
 
-def detect_frame_ocr_rec(image, ocr_engine, person_boxes, feat_extractor, team_searcher):
+def detect_frame_ocr_rec(image, ocr_engine, person_boxes, feat_extractor, team_searcher, valid_number_list):
     out_image = image.copy()
     playernum_boxes = []
 
@@ -99,7 +99,7 @@ def detect_frame_ocr_rec(image, ocr_engine, person_boxes, feat_extractor, team_s
         number_img = out_image[num_y1:num_y2, num_x1:num_x2, :]
         number_result = ocr_engine.ocr(number_img, det=False, rec=True, cls=False)
         text, score = number_result[0][0]
-        print("== recog number ", number_result)
+        #print("== recog number ", number_result)
         number = re.findall(r'\d+', text)
     
         if score >= 0.6 and len(number) > 0:
@@ -120,8 +120,11 @@ def detect_frame_ocr_rec(image, ocr_engine, person_boxes, feat_extractor, team_s
                     if shape[0]>0 and shape[1]>0:
                         team_name = get_team_name(feat_extractor, player, team_searcher)
                         player_num_team = '{}_{}_N_0'.format(player_num_ocr, team_name)
-                        playernum_boxes.append([num_x1, num_y1, num_x2, num_y2, player_num_team])
-                        break
+                        if player_num_team in valid_number_list:
+                            playernum_boxes.append([num_x1, num_y1, num_x2, num_y2, player_num_team])
+                            break
+                        else:
+                            print("== ignore invalid number player_num_team ", player_num_team)
        
     return out_image, playernum_boxes
 
@@ -167,6 +170,13 @@ def init_num_db(feat_extractor, db_path_reg):
         searcher.update(img_key, feat)
     return searcher
 
+def read_valid_number(number_path):
+    valid_numbers = []
+    with open(number_path, 'r') as fin:
+        for line in fin.readlines():
+            valid_numbers.append(line.strip())
+    return valid_numbers
+
     
 if __name__ == '__main__':
     #cnt_number()
@@ -176,6 +186,7 @@ if __name__ == '__main__':
 
     frame_2_person_list = read_track_file('./datas/basketball_dataset_01/CBA-cut11.track') 
 
+    valid_number_list = read_valid_number('./datas/team_db/CBA_valid_number.txt')
 
     detector = Yolo7(ckpt='./detectors/yolo7/checkpoints/number_best_v1.pt')
 
@@ -206,7 +217,7 @@ if __name__ == '__main__':
             #out_image = detect_frame_number(frame, clip_feat, searcher)
             person_boxes = frame_2_person_list.get(str(frame_id), [])
 
-            out_image, playernum_boxes = detect_frame_ocr_rec(frame, ocr_engine, person_boxes, person_feat, team_searcher)
+            out_image, playernum_boxes = detect_frame_ocr_rec(frame, ocr_engine, person_boxes, person_feat, team_searcher, valid_number_list)
             for player_box in playernum_boxes:
                 player_out = ','.join(map(str, player_box))            
                 line = '{},{}\n'.format(frame_id, player_out)

@@ -103,6 +103,17 @@ def write_label_json(json_path, out_frame_2_person):
             else:
                 print("== no player person ", frame_idx)
 
+def find_max(cross_percents):
+    max_idx = 0
+    max_percent = cross_percents[0]
+    for p_idx,percent in enumerate(cross_percents):
+        if percent > max_percent:
+            max_idx = p_idx
+            max_percent = percent
+    return (max_idx, max_percent)
+
+        
+
 if __name__ == '__main__':
     #person_track_file = '/home/avs/Codes/PaddleDetection/output/LNBGvsZJCZ_615.txt'
     person_track_file = '/home/avs/Codes/face_recognition/datas/basketball_dataset_01/CBA-cut11.track'
@@ -119,23 +130,35 @@ if __name__ == '__main__':
             for player in player_num_list:
                 player_id = player[0]
                 player_box = player[1:5]
-                for person in person_list:
+                cross_percents = []
+                for p_idx, person in enumerate(person_list):
                     person_id = person[0]
                     person_x1, person_y1, person_w, person_h = person[1:5]
                     person_box = [person_x1, person_y1, person_x1+person_w, person_y1+person_h]
                     if is_rectangle_cross(player_box, person_box):
                         cross_percent = cross_area(player_box, person_box)
-                        print("== cross percent ", cross_percent)
-
-                        if cross_percent >= 0.85:
-                            player_list = person_2_player_num.get(person_id, [])
-                            player_list.append(player_id)
-                            person_2_player_num[person_id] = player_list
-                            print('== frame_idx ', frame_idx, ' person ', person_id, ' with player ', player_id)
-                            break
+                        cross_percents.append(cross_percent)                    
+                    else:
+                        cross_percents.append(0)
+                max_pid, max_percent = find_max(cross_percents)
+                if max_percent == 0:
+                    continue
+                person = person_list[max_pid]
+                person_id = person[0]
+                player_list = person_2_player_num.get(person_id, [])
+                player_list.append(player_id)
+                person_2_player_num[person_id] = player_list
                 
-        
-    #print(person_2_face)
+                    #if is_rectangle_cross(player_box, person_box):
+                    #    cross_percent = cross_area(player_box, person_box)
+                    #    print("== cross percent ", cross_percent)
+
+                    #    if cross_percent >= 0.85:
+                    #        player_list = person_2_player_num.get(person_id, [])
+                    #        player_list.append(player_id)
+                    #        person_2_player_num[person_id] = player_list
+                    #        print('== frame_idx ', frame_idx, ' person ', person_id, ' with player ', player_id)
+                
 
     video_file = '/home/avs/Codes/face_recognition/datas/basketball_dataset_01/CBA-cut11.mp4'
     output_dir = './datas/basketball_dataset_01/'
@@ -172,6 +195,7 @@ if __name__ == '__main__':
             if str(frame_id) not in frame_2_person_list:
                 print('== no person in frame ', frame_id)
                 continue
+            frame_id_used = []
             person_list = frame_2_person_list[str(frame_id)]
             out_person_list = []
             for person_box in person_list: 
@@ -181,8 +205,12 @@ if __name__ == '__main__':
                 if person_id in person_2_player_num:
                     player_id_list = person_2_player_num[person_id]
                     player_id_max_cnt = stat_person(player_id_list)
-                    if player_id_max_cnt[1] >= cnt_thresh:
+                    print("== player id cnt ", player_id_max_cnt)
+                    if (player_id_max_cnt[1] >= cnt_thresh) and player_id_max_cnt[0] not in frame_id_used:
+
                         player_str = player_id_max_cnt[0]
+                        frame_id_used.append(player_str)
+
                         player_id = int(player_str.split('_')[0])
                         team_id = int(player_str.split('_')[1])
                         color = get_color(team_id*100+abs(player_id))
