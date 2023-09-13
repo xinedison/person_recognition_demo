@@ -149,16 +149,6 @@ if __name__ == '__main__':
                 player_list.append(player_id)
                 person_2_player_num[person_id] = player_list
                 
-                    #if is_rectangle_cross(player_box, person_box):
-                    #    cross_percent = cross_area(player_box, person_box)
-                    #    print("== cross percent ", cross_percent)
-
-                    #    if cross_percent >= 0.85:
-                    #        player_list = person_2_player_num.get(person_id, [])
-                    #        player_list.append(player_id)
-                    #        person_2_player_num[person_id] = player_list
-                    #        print('== frame_idx ', frame_idx, ' person ', person_id, ' with player ', player_id)
-                
 
     video_file = '/home/avs/Codes/face_recognition/datas/basketball_dataset_01/CBA-cut11.mp4'
     output_dir = './datas/basketball_dataset_01/'
@@ -205,8 +195,8 @@ if __name__ == '__main__':
                 if person_id in person_2_player_num:
                     player_id_list = person_2_player_num[person_id]
                     player_id_max_cnt = stat_person(player_id_list)
-                    print("== player id cnt ", player_id_max_cnt)
-                    if (player_id_max_cnt[1] >= cnt_thresh) and player_id_max_cnt[0] not in frame_id_used:
+                    #print("== player id cnt ", player_id_max_cnt)
+                    if (player_id_max_cnt[1] >= cnt_thresh) and (player_id_max_cnt[0] not in frame_id_used):
 
                         player_str = player_id_max_cnt[0]
                         frame_id_used.append(player_str)
